@@ -21,11 +21,25 @@ func New(start, end time.Time) Span {
 }
 
 // Equal full equals of two time slots
-func (s *Span) Equal(input Span) bool {
-	return s.start.Equal(input.start) && s.end.Equal(input.end)
+// offset - possible deviation from the time interval
+func (s *Span) Equal(input Span, offset ...time.Duration) bool {
+	defaultOffset := time.Second * 0
+	if len(offset) > 0 {
+		defaultOffset = offset[0]
+	}
+	startSub := s.start.Sub(input.start)
+	endSub := s.end.Sub(input.end)
+
+	return startSub <= defaultOffset && startSub >= -defaultOffset &&
+		endSub <= defaultOffset && endSub >= -defaultOffset
 }
 
-// IsIntersection - проверка на пересечение временных интервалов (не включаются случаи на стыке)
-func (s *Span) IsIntersection(input Span) bool {
-	return s.start.Before(input.end) && s.end.After(input.start)
+// IsIntersection  проверка на пересечение временных интервалов (не включаются случаи на стыке)
+// offset - possible deviation from the time interval
+func (s *Span) IsIntersection(input Span, offset ...time.Duration) bool {
+	defaultOffset := time.Second * 0
+	if len(offset) > 0 {
+		defaultOffset = offset[0]
+	}
+	return s.start.Add(defaultOffset).Before(input.end) && s.end.After(input.start.Add(defaultOffset))
 }

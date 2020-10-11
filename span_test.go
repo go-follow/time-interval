@@ -1,9 +1,10 @@
 package time_interval
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEqual(t *testing.T) {
@@ -11,6 +12,7 @@ func TestEqual(t *testing.T) {
 		name          string
 		newInterval   Span
 		inputInterval Span
+		offset        time.Duration
 		excepted      bool
 	}{
 		{
@@ -24,6 +26,17 @@ func TestEqual(t *testing.T) {
 			excepted: false,
 		},
 		{
+			name: "equal_slightly_with_offset",
+			newInterval: New(
+				time.Date(2020, 10, 11, 15, 0, 5, 0, time.UTC),
+				time.Date(2020, 10, 11, 16, 0, 5, 0, time.UTC)),
+			inputInterval: New(
+				time.Date(2020, 10, 11, 15, 00, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 16, 00, 0, 0, time.UTC)),
+			offset: time.Second * 5,
+			excepted: true,
+		},
+		{
 			name: "not_equal_many",
 			newInterval: New(
 				time.Date(2020, 10, 11, 17, 30, 0, 0, time.UTC),
@@ -34,7 +47,18 @@ func TestEqual(t *testing.T) {
 			excepted: false,
 		},
 		{
-			name: "equal",
+			name: "equal_many_with_offset",
+			newInterval: New(
+				time.Date(2020, 10, 11, 15, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 21, 0, 0, 0, time.UTC)),
+			inputInterval: New(
+				time.Date(2020, 10, 11, 14, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 18, 0, 0, 0, time.UTC)),
+			offset: 3 * time.Hour,
+			excepted: true,
+		},
+		{
+			name: "full_equal",
 			newInterval: New(
 				time.Date(2020, 10, 11, 17, 30, 0, 0, time.UTC),
 				time.Date(2020, 10, 11, 17, 30, 17, 12, time.UTC)),
@@ -47,7 +71,7 @@ func TestEqual(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			result := tc.newInterval.Equal(tc.inputInterval)
+			result := tc.newInterval.Equal(tc.inputInterval, tc.offset)
 			assert.Equal(t, tc.excepted, result)
 		})
 	}
@@ -58,6 +82,7 @@ func TestIsIntersection(t *testing.T) {
 		name          string
 		newInterval   Span
 		inputInterval Span
+		offset        time.Duration
 		excepted      bool
 	}{
 		{
@@ -83,6 +108,32 @@ func TestIsIntersection(t *testing.T) {
 			excepted: true,
 		},
 		{
+			name: "not_intersection_slightly_with_offset",
+			newInterval: New(
+				time.Date(2020, 10, 11, 17, 30, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 18, 22, 0, 0, time.UTC),
+			),
+			inputInterval: New(
+				time.Date(2020, 10, 11, 16, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 17, 30, 5, 0, time.UTC),
+			),
+			offset:   time.Second * 5,
+			excepted: false,
+		},
+		{
+			name: "intersection_slightly_with_offset",
+			newInterval: New(
+				time.Date(2020, 10, 11, 17, 30, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 18, 22, 0, 0, time.UTC),
+			),
+			inputInterval: New(
+				time.Date(2020, 10, 11, 16, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 17, 30, 6, 0, time.UTC),
+			),
+			offset:   time.Second * 5,
+			excepted: true,
+		},
+		{
 			name: "intersection_many",
 			newInterval: New(
 				time.Date(2020, 10, 11, 17, 30, 0, 0, time.UTC),
@@ -91,6 +142,17 @@ func TestIsIntersection(t *testing.T) {
 				time.Date(2020, 10, 11, 17, 10, 0, 0, time.UTC),
 				time.Date(2020, 10, 11, 18, 22, 0, 0, time.UTC)),
 			excepted: true,
+		},
+		{
+			name: "not_intersection_many",
+			newInterval: New(
+				time.Date(2020, 10, 11, 17, 30, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 18, 22, 0, 0, time.UTC)),
+			inputInterval: New(
+				time.Date(2020, 10, 11, 17, 10, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 18, 22, 0, 0, time.UTC)),
+			offset:   time.Hour * 1,
+			excepted: false,
 		},
 		{
 			name: "not_intersection",
@@ -106,7 +168,7 @@ func TestIsIntersection(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			result := tc.newInterval.IsIntersection(tc.inputInterval)
+			result := tc.newInterval.IsIntersection(tc.inputInterval, tc.offset)
 			assert.Equal(t, tc.excepted, result)
 		})
 	}
