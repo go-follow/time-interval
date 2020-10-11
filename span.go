@@ -20,6 +20,21 @@ func New(start, end time.Time) Span {
 	}
 }
 
+// Start - returning start time interval
+func (s *Span) Start() time.Time {
+	return s.start
+}
+
+// End - returning end time interval
+func (s *Span) End() time.Time {
+	return s.end
+}
+
+// IsEmpty - defines empty spacing
+func (s Span) IsEmpty() bool {
+	return s.start.IsZero() && s.end.IsZero()
+}
+
 // Equal full equals of two time slots
 // offset - possible deviation from the time interval
 func (s *Span) Equal(input Span, offset ...time.Duration) bool {
