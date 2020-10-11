@@ -49,7 +49,7 @@ func (s *Span) Equal(input Span, offset ...time.Duration) bool {
 		endSub <= defaultOffset && endSub >= -defaultOffset
 }
 
-// IsIntersection  проверка на пересечение временных интервалов (не включаются случаи на стыке)
+// IsIntersection check for intersection of time intervals
 // offset - possible deviation from the time interval
 func (s *Span) IsIntersection(input Span, offset ...time.Duration) bool {
 	defaultOffset := time.Second * 0
@@ -57,4 +57,26 @@ func (s *Span) IsIntersection(input Span, offset ...time.Duration) bool {
 		defaultOffset = offset[0]
 	}
 	return s.start.Add(defaultOffset).Before(input.end) && s.end.After(input.start.Add(defaultOffset))
+}
+
+// Intersection - intersection of two time intervals
+func (s *Span) Intersection(input Span) Span {
+	if !s.IsIntersection(input) {
+		return Span{}
+	}
+	if afterOrEqual(s.end, input.start) &&
+		beforeOrEqual(s.start, input.start) && beforeOrEqual(s.end, input.end) {
+		return New(input.start, s.end)
+	}
+	if beforeOrEqual(s.start, input.end) &&
+		afterOrEqual(s.end, input.end) && afterOrEqual(s.start, input.start) {
+		return New(s.start, input.end)
+	}
+	if afterOrEqual(s.start, input.start) && beforeOrEqual(s.end, input.end) {
+		return New(s.start, s.end)
+	}
+	if beforeOrEqual(s.start, input.start) && afterOrEqual(s.end, input.end) {
+		return New(input.start, input.end)
+	}
+	panic("unknown case for Intersection")
 }
