@@ -31,7 +31,7 @@ func (s *Span) End() time.Time {
 }
 
 // IsEmpty - defines empty spacing
-func (s Span) IsEmpty() bool {
+func (s *Span) IsEmpty() bool {
 	return s.start.IsZero() && s.end.IsZero()
 }
 
