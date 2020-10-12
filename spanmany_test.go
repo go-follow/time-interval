@@ -252,3 +252,56 @@ func TestExceptionIfNotEqual(t *testing.T) {
 		})
 	}
 }
+
+func TestIntersectionMany(t *testing.T) {
+	testCases := []struct {
+		name      string
+		newSpan   SpanMany
+		inputSpan Span
+
+		excepted SpanMany
+	}{
+		{
+			name: "not_intersection",
+			newSpan: NewMany(
+				New(
+					time.Date(2020, 10, 12, 15, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 17, 0, 0, 0, time.UTC)),
+				New(
+					time.Date(2020, 10, 12, 7, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 12, 0, 0, 0, time.UTC)),
+				New(
+					time.Date(2020, 10, 12, 20, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 22, 0, 0, 0, time.UTC)),
+				New(
+					time.Date(2020, 10, 12, 18, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 23, 0, 0, 0, time.UTC)),
+				New(
+					time.Date(2020, 10, 12, 7, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 10, 0, 0, 0, time.UTC)),
+			),
+			inputSpan: New(
+				time.Date(2020, 10, 12, 10, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 12, 19, 0, 0, 0, time.UTC),
+			),
+			excepted: NewMany(
+				New(
+					time.Date(2020, 10, 12, 15, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 17, 0, 0, 0, time.UTC)),
+				New(
+					time.Date(2020, 10, 12, 10, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 12, 0, 0, 0, time.UTC)),
+				New(
+					time.Date(2020, 10, 12, 18, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 19, 0, 0, 0, time.UTC)),
+			),
+		},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			result := tc.newSpan.Intersection(tc.inputSpan)
+			assert.Equal(t, tc.excepted, result)
+		})
+	}
+}

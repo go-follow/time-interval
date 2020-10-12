@@ -67,3 +67,18 @@ func (s *SpanMany) ExceptionIfNotEqual(input SpanMany, offset ...time.Duration) 
 	}
 	return NewMany(listSpans...)
 }
+
+// Intersection - нахождение временных интервалов по пересечению с другим временным интервалом
+func (s *SpanMany) Intersection(input Span) SpanMany {
+	if len(s.spans) == 0 {
+		return NewMany()
+	}
+	var intersectionList []Span
+	for _, sp := range s.spans {
+		intersectionSpan := sp.Intersection(input)
+		if !intersectionSpan.IsEmpty() {
+			intersectionList = append(intersectionList, intersectionSpan)
+		}
+	}
+	return NewMany(intersectionList...)
+}
