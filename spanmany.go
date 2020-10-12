@@ -45,10 +45,10 @@ func (s *SpanMany) IsIntersection(input Span, offset ...time.Duration) bool {
 }
 
 // ExceptionIfIntersection excludes periods from the SpanMany if there is an intersection with another SpanMany
-func (s *SpanMany) ExceptionIfIntersection(input SpanMany) SpanMany {
+func (s *SpanMany) ExceptionIfIntersection(input SpanMany, offset ...time.Duration) SpanMany {
 	var listSpans []Span
 	for _, s := range s.spans {
-		if input.IsIntersection(s) {
+		if input.IsIntersection(s, offset...) {
 			continue
 		}
 		listSpans = append(listSpans, s)
@@ -57,10 +57,10 @@ func (s *SpanMany) ExceptionIfIntersection(input SpanMany) SpanMany {
 }
 
 // ExceptionIfNotEqual excludes periods from the SpanMany if it does not meet any equality with another SpanMany
-func (s *SpanMany) ExceptionIfNotEqual(input SpanMany) SpanMany {
+func (s *SpanMany) ExceptionIfNotEqual(input SpanMany, offset ...time.Duration) SpanMany {
 	var listSpans []Span
 	for _, s := range s.spans {
-		if input.Equal(s) {
+		if input.Equal(s, offset...) {
 			listSpans = append(listSpans, s)
 			continue
 		}
