@@ -43,3 +43,27 @@ func (s *SpanMany) IsIntersection(input Span, offset ...time.Duration) bool {
 	}
 	return false
 }
+
+// ExceptionIfIntersection excludes periods from the SpanMany if there is an intersection with another SpanMany
+func (s *SpanMany) ExceptionIfIntersection(input SpanMany) SpanMany {
+	var listSpans []Span
+	for _, s := range s.spans {
+		if input.IsIntersection(s) {
+			continue
+		}
+		listSpans = append(listSpans, s)
+	}
+	return NewMany(listSpans...)
+}
+
+// ExceptionIfNotEqual excludes periods from the SpanMany if it does not meet any equality with another SpanMany
+func (s *SpanMany) ExceptionIfNotEqual(input SpanMany) SpanMany {
+	var listSpans []Span
+	for _, s := range s.spans {
+		if input.Equal(s) {
+			listSpans = append(listSpans, s)
+			continue
+		}
+	}
+	return NewMany(listSpans...)
+}
