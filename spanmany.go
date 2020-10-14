@@ -1,6 +1,9 @@
 package time_interval
 
-import "time"
+import (
+	"sort"
+	"time"
+)
 
 // SpanMany  model containing more than one time interval
 type SpanMany struct {
@@ -17,6 +20,22 @@ func NewMany(spans ...Span) SpanMany {
 	return SpanMany{
 		spans: spans,
 	}
+}
+
+// Sort Сортировка по возрастанию для нескольких интервалов
+func (s *SpanMany) Sort(st ...SortType) {
+	if len(s.spans) == 0 {
+		return
+	}
+	if len(st) > 0 && st[0] == Decrease {
+		sort.Slice(s.spans, func(i, j int) bool {
+			return s.spans[i].start.After(s.spans[j].start)
+		})
+		return
+	}
+	sort.Slice(s.spans, func(i, j int) bool {
+		return s.spans[i].start.Before(s.spans[j].start)
+	})
 }
 
 // Equal  full comparison of SpanMany of time intervals with one interval

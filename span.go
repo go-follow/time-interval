@@ -80,3 +80,33 @@ func (s *Span) Intersection(input Span) Span {
 	}
 	panic("unknown case for Intersection")
 }
+
+// Union - union of two time intervals
+func (s Span) Union(input Span) SpanMany {
+	if s.isIntersectionEqual(input) {
+		return NewMany(New(s.minStart(input), s.maxEnd(input)))
+	}
+	result := NewMany(New(s.start, s.end), New(input.start, input.end))
+	result.Sort()
+	return result
+}
+
+func (s *Span) minStart(input Span) time.Time {
+	if s.start.Before(input.start) {
+		return s.start
+	}
+	return input.start
+}
+
+func (s *Span) maxEnd(input Span) time.Time {
+	if s.end.After(input.end) {
+		return s.end
+	}
+	return input.end
+}
+
+// IsIntersectionForEqual - checking for the intersection of time intervals.
+// The difference from the public method is that it includes cases at the junction
+func (s *Span) isIntersectionEqual(input Span) bool {
+	return beforeOrEqual(s.start, input.end) && afterOrEqual(s.end, input.start)
+}
