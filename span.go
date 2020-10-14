@@ -82,7 +82,7 @@ func (s *Span) Intersection(input Span) Span {
 }
 
 // Union - union of two time intervals
-func (s Span) Union(input Span) SpanMany {
+func (s *Span) Union(input Span) SpanMany {
 	if s.isIntersectionEqual(input) {
 		return NewMany(New(s.minStart(input), s.maxEnd(input)))
 	}
