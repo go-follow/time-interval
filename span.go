@@ -20,17 +20,17 @@ func New(start, end time.Time) Span {
 	}
 }
 
-// Start - returning start time interval
+// Start returning start time interval
 func (s *Span) Start() time.Time {
 	return s.start
 }
 
-// End - returning end time interval
+// End returning end time interval
 func (s *Span) End() time.Time {
 	return s.end
 }
 
-// IsEmpty - defines empty spacing
+// IsEmpty  defines empty spacing
 func (s *Span) IsEmpty() bool {
 	return s.start.IsZero() && s.end.IsZero()
 }
@@ -59,7 +59,7 @@ func (s *Span) IsIntersection(input Span, offset ...time.Duration) bool {
 	return s.start.Add(defaultOffset).Before(input.end) && s.end.After(input.start.Add(defaultOffset))
 }
 
-// Intersection - intersection of two time intervals
+// Intersection intersection of two time intervals
 func (s *Span) Intersection(input Span) Span {
 	if !s.IsIntersection(input) {
 		return Span{}
@@ -81,7 +81,7 @@ func (s *Span) Intersection(input Span) Span {
 	panic("unknown case for Intersection")
 }
 
-// Union - union of two time intervals
+// Union union of two time intervals
 func (s *Span) Union(input Span) SpanMany {
 	if s.isIntersectionEqual(input) {
 		return NewMany(New(s.minStart(input), s.maxEnd(input)))
@@ -89,6 +89,29 @@ func (s *Span) Union(input Span) SpanMany {
 	result := NewMany(New(s.start, s.end), New(input.start, input.end))
 	result.Sort()
 	return result
+}
+
+// Except  difference in time intervals - from input (s \ input)
+func (s *Span) Except(input Span) SpanMany {
+	if !s.IsIntersection(input) {
+		return NewMany(New(s.start, s.end))
+	}
+	if afterOrEqual(s.start, input.start) && beforeOrEqual(s.end, input.end) {
+		return NewMany()
+	}
+	if s.start.Before(input.start) && s.end.After(input.end) {
+		return NewMany(
+			New(s.start, input.start),
+			New(input.end, s.end),
+		)
+	}
+	if s.start.Before(input.start) && afterOrEqual(s.end, input.start) {
+		return NewMany(New(s.start, input.start))
+	}
+	if beforeOrEqual(s.start, input.end) && s.end.After(input.end) {
+		return NewMany(New(input.end, s.end))
+	}
+	panic("unknown case for Except")
 }
 
 func (s *Span) minStart(input Span) time.Time {
@@ -105,7 +128,7 @@ func (s *Span) maxEnd(input Span) time.Time {
 	return input.end
 }
 
-// IsIntersectionForEqual - checking for the intersection of time intervals.
+// isIntersectionForEqual  checking for the intersection of time intervals.
 // The difference from the public method is that it includes cases at the junction
 func (s *Span) isIntersectionEqual(input Span) bool {
 	return beforeOrEqual(s.start, input.end) && afterOrEqual(s.end, input.start)

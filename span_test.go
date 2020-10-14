@@ -407,3 +407,105 @@ func TestUnion(t *testing.T) {
 		})
 	}
 }
+
+func TestExcept(t *testing.T) {
+	testCases := []struct {
+		name      string
+		newSpan   Span
+		inputSpan Span
+
+		excepted SpanMany
+	}{
+		{
+			name: "not_intersection",
+			newSpan: New(
+				time.Date(2020, 10, 14, 10, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 14, 12, 0, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 10, 14, 12, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 14, 18, 0, 0, 0, time.UTC),
+			),
+			excepted: NewMany(
+				New(
+					time.Date(2020, 10, 14, 10, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 14, 12, 0, 0, 0, time.UTC),
+				),
+			),
+		},
+		{
+			name: "full_intersection",
+			newSpan: New(
+				time.Date(2020, 10, 14, 12, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 14, 14, 0, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 10, 14, 7, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 14, 15, 0, 0, 0, time.UTC),
+			),
+			excepted: NewMany(),
+		},
+		{
+			name: "torn_result",
+			newSpan: New(
+				time.Date(2020, 10, 14, 7, 15, 0, 0, time.UTC),
+				time.Date(2020, 10, 14, 15, 22, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 10, 14, 12, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 14, 14, 0, 0, 0, time.UTC),
+			),
+			excepted: NewMany(
+				New(
+					time.Date(2020, 10, 14, 7, 15, 0, 0, time.UTC),
+					time.Date(2020, 10, 14, 12, 0, 0, 0, time.UTC),
+				),
+				New(
+					time.Date(2020, 10, 14, 14, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 14, 15, 22, 0, 0, time.UTC),
+				),
+			),
+		},
+		{
+			name: "right_takeover",
+			newSpan: New(
+				time.Date(2020, 10, 14, 9, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 14, 12, 0, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 10, 14, 11, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 14, 15, 0, 0, 0, time.UTC),
+			),
+			excepted: NewMany(
+				New(
+					time.Date(2020, 10, 14, 9, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 14, 11, 0, 0, 0, time.UTC),
+				),
+			),
+		},
+		{
+			name: "left_takeover",
+			newSpan: New(
+				time.Date(2020, 10, 14, 10, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 14, 15, 0, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 10, 14, 9, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 14, 14, 30, 0, 0, time.UTC),
+			),
+			excepted: NewMany(
+				New(
+					time.Date(2020, 10, 14, 14, 30, 0, 0, time.UTC),
+					time.Date(2020, 10, 14, 15, 0, 0, 0, time.UTC),
+				),
+			),
+		},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			result := tc.newSpan.Except(tc.inputSpan)
+			assert.Equal(t, tc.excepted, result)
+		})
+	}
+}

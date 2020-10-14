@@ -5,10 +5,10 @@ import "time"
 type SortType int
 
 const (
-	// Increase sort by increase (default)
-	Increase SortType = iota
-	// Decrease sort by decrease
-	Decrease
+	// Ascending sort ascending (default)
+	Ascending SortType = iota
+	// Descending sort descending
+	Descending
 )
 
 func beforeOrEqual(t1, t2 time.Time) bool {
