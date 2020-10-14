@@ -31,10 +31,32 @@ func TestEqual(t *testing.T) {
 				time.Date(2020, 10, 11, 15, 0, 5, 0, time.UTC),
 				time.Date(2020, 10, 11, 16, 0, 5, 0, time.UTC)),
 			inputInterval: New(
-				time.Date(2020, 10, 11, 15, 00, 0, 0, time.UTC),
-				time.Date(2020, 10, 11, 16, 00, 0, 0, time.UTC)),
+				time.Date(2020, 10, 11, 15, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 16, 0, 0, 0, time.UTC)),
 			offset:   time.Second * 5,
 			excepted: true,
+		},
+		{
+			name: "equal_offset_5_minute",
+			newInterval: New(
+				time.Date(2020, 10, 11, 15, 5, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 16, 0, 0, 0, time.UTC)),
+			inputInterval: New(
+				time.Date(2020, 10, 11, 15, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 16, 5, 0, 0, time.UTC)),
+			offset:   time.Minute * 5,
+			excepted: true,
+		},
+		{
+			name: "not_equal_offset_5_minute",
+			newInterval: New(
+				time.Date(2020, 10, 11, 15, 30, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 16, 20, 0, 0, time.UTC)),
+			inputInterval: New(
+				time.Date(2020, 10, 11, 16, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 11, 16, 20, 0, 0, time.UTC)),
+			offset:   time.Minute * 5,
+			excepted: false,
 		},
 		{
 			name: "not_equal_many",

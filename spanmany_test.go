@@ -1,9 +1,10 @@
 package time_interval
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEqualMany(t *testing.T) {
@@ -11,6 +12,7 @@ func TestEqualMany(t *testing.T) {
 		name            string
 		newIntervalMany SpanMany
 		inputInterval   Span
+		offset          time.Duration
 		excepted        bool
 	}{
 		{
@@ -50,6 +52,44 @@ func TestEqualMany(t *testing.T) {
 			excepted: false,
 		},
 		{
+			name: "not_equal_offset",
+			newIntervalMany: NewMany(
+				New(
+					time.Date(2020, 10, 12, 9, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 10, 0, 0, 12, time.UTC)),
+				New(
+					time.Date(2020, 10, 12, 19, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 20, 0, 0, 0, time.UTC)),
+				New(
+					time.Date(2020, 10, 12, 16, 54, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 18, 0, 0, 11, time.UTC)),
+			),
+			offset: 5 * time.Minute,
+			inputInterval: New(
+				time.Date(2020, 10, 12, 17, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 12, 18, 5, 0, 11, time.UTC)),
+			excepted: false,
+		},
+		{
+			name: "equal_offset",
+			newIntervalMany: NewMany(
+				New(
+					time.Date(2020, 10, 12, 9, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 10, 0, 0, 12, time.UTC)),
+				New(
+					time.Date(2020, 10, 12, 19, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 20, 0, 0, 0, time.UTC)),
+				New(
+					time.Date(2020, 10, 12, 16, 55, 0, 0, time.UTC),
+					time.Date(2020, 10, 12, 18, 0, 0, 11, time.UTC)),
+			),
+			offset: 5 * time.Minute,
+			inputInterval: New(
+				time.Date(2020, 10, 12, 17, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 12, 18, 5, 0, 11, time.UTC)),
+			excepted: true,
+		},
+		{
 			name: "equal",
 			newIntervalMany: NewMany(
 				New(
@@ -74,7 +114,7 @@ func TestEqualMany(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			result := tc.newIntervalMany.Equal(tc.inputInterval)
+			result := tc.newIntervalMany.Equal(tc.inputInterval, tc.offset)
 			assert.Equal(t, tc.excepted, result)
 		})
 	}
