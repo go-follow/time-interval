@@ -345,3 +345,82 @@ func TestIntersectionMany(t *testing.T) {
 		})
 	}
 }
+
+func TestUnionMany(t *testing.T) {
+	testCases := []struct {
+		name              string
+		newIntervalMany   SpanMany
+		inputIntervalMany SpanMany
+
+		excepted SpanMany
+	}{
+		{
+			name:              "empty",
+			newIntervalMany:   NewMany(),
+			inputIntervalMany: NewMany(),
+
+			excepted: NewMany(),
+		},
+		{
+			name:            "new_empty",
+			newIntervalMany: NewMany(),
+			inputIntervalMany: NewMany(
+				New(
+					time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 8, 0, 0, 0, time.UTC)),
+			),
+			excepted: NewMany(
+				New(
+					time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 8, 0, 0, 0, time.UTC)),
+			),
+		},
+		{
+			name: "input_empty",
+			newIntervalMany: NewMany(
+				New(
+					time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 8, 0, 0, 0, time.UTC)),
+			),
+			inputIntervalMany: NewMany(),
+			excepted: NewMany(
+				New(
+					time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 8, 0, 0, 0, time.UTC)),
+			),
+		},
+		{
+			name: "many_test",
+			newIntervalMany: NewMany(
+				New(time.Date(2020, 10, 17, 12, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 14, 0, 0, 0, time.UTC)),
+				New(time.Date(2020, 10, 17, 22, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 23, 0, 0, 0, time.UTC)),
+				New(time.Date(2020, 10, 17, 13, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 17, 0, 0, 0, time.UTC)),
+			),
+			inputIntervalMany: NewMany(
+				New(time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC)),
+				New(time.Date(2020, 10, 17, 21, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 23, 0, 0, 0, time.UTC)),
+				New(time.Date(2020, 10, 17, 11, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 15, 0, 0, 0, time.UTC))),
+			excepted: NewMany(
+				New(time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC)),
+				New(time.Date(2020, 10, 17, 11, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 17, 0, 0, 0, time.UTC)),
+				New(time.Date(2020, 10, 17, 21, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 23, 0, 0, 0, time.UTC)),
+			),
+		},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			result := tc.newIntervalMany.Union(tc.inputIntervalMany)
+			assert.Equal(t, tc.excepted, result)
+		})
+	}
+}

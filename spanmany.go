@@ -132,3 +132,30 @@ func (s *SpanMany) Intersection(input Span) SpanMany {
 	}
 	return NewMany(intersectionList...)
 }
+
+// Union concatenation of arrays of time intervals
+func (s SpanMany) Union(input ...SpanMany) SpanMany {
+	var result []Span
+	for _, inp := range input {
+		s.spans = append(s.spans, inp.spans...)
+	}
+	s.Sort()
+
+	var bufferSpan Span
+	for _, sp := range s.spans {
+		if bufferSpan.start.IsZero() {
+			bufferSpan = sp
+			continue
+		}
+		if sp.isIntersectionEqual(bufferSpan) {
+			bufferSpan = New(sp.minStart(bufferSpan), sp.maxEnd(bufferSpan))
+			continue
+		}
+		result = append(result, bufferSpan)
+		bufferSpan = sp
+	}
+	if !bufferSpan.start.IsZero() {
+		result = append(result, bufferSpan)
+	}
+	return NewMany(result...)
+}
