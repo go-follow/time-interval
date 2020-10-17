@@ -72,32 +72,44 @@ import (
 
 func main() {
     timeStart1 := time.Date(2020, 10, 17, 12, 0, 0, 0, time.UTC)
-    timeEnd1 := time.Date(2020, 10, 17, 14, 0, 0, 0, time.UTC)
-    timeStart2 := time.Date(2020, 10, 17, 22, 0, 0, 0, time.UTC)
-    timeEnd2 := time.Date(2020, 10, 17, 23, 0, 0, 0, time.UTC)
-    timeStart3 := time.Date(2020, 10, 17, 13, 0, 0, 0, time.UTC)
-    timeEnd3 := time.Date(2020, 10, 17, 17, 0, 0, 0, time.UTC)
-    timeStart4 := time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC)
-    timeEnd4 :=  time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC)   				
-    timeStart5 := time.Date(2020, 10, 17, 21, 0, 0, 0, time.UTC)
-    timeEnd5 := time.Date(2020, 10, 17, 23, 0, 0, 0, time.UTC)
-    timeStart6 := time.Date(2020, 10, 17, 11, 0, 0, 0, time.UTC)
-    timeEnd6 := time.Date(2020, 10, 17, 15, 0, 0, 0, time.UTC)		
+    	timeEnd1 := time.Date(2020, 10, 17, 14, 0, 0, 0, time.UTC)
+    	timeStart2 := time.Date(2020, 10, 17, 22, 0, 0, 0, time.UTC)
+    	timeEnd2 := time.Date(2020, 10, 17, 23, 0, 0, 0, time.UTC)
+    	timeStart3 := time.Date(2020, 10, 17, 13, 0, 0, 0, time.UTC)
+    	timeEnd3 := time.Date(2020, 10, 17, 17, 0, 0, 0, time.UTC)
+    	timeStart4 := time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC)
+    	timeEnd4 :=  time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC)
+    	timeStart5 := time.Date(2020, 10, 17, 21, 0, 0, 0, time.UTC)
+    	timeEnd5 := time.Date(2020, 10, 17, 23, 0, 0, 0, time.UTC)
+    	timeStart6 := time.Date(2020, 10, 17, 11, 0, 0, 0, time.UTC)
+    	timeEnd6 := time.Date(2020, 10, 17, 15, 0, 0, 0, time.UTC)
     
-    timeSpan := interval.New(timeStart1, timeEnd1)
-    result := timeSpan.Union(interval.New(timeStart3, timeEnd3))
-    fmt.Println(result.String())
+    	timeSpan := interval.New(timeStart1, timeEnd1)
+    	result := timeSpan.Union(interval.New(timeStart3, timeEnd3))
     
-    timeSpanMany1 := interval.NewMany(
-        timeSpan,
-        interval.New(timeStart2, timeEnd2),
-        interval.New(timeStart3, timeEnd3),
-    )
-    timeSpanMany2 := interval.NewMany()
-    timeSpanMany2.Add(timeStart4, timeEnd4)
-    timeSpanMany2.AddMany(interval.New(timeStart5, timeEnd5), interval.New(timeStart6, timeEnd6))    
-    resultMany := timeSpanMany1.Union(timeSpanMany2)
-    fmt.Println(resultMany.String())   
+    	// [
+    	//	2020-10-17 12:00:00 +0000 UTC - 2020-10-17 17:00:00 +0000 UTC
+    	// ]
+    	fmt.Println(result.String())
+    
+    	timeSpanMany1 := interval.NewMany(
+    		timeSpan,
+    		interval.New(timeStart2, timeEnd2),
+    		interval.New(timeStart3, timeEnd3),
+    	)
+    	timeSpanMany2 := interval.NewMany()
+    	timeSpanMany2.Add(timeStart4, timeEnd4)
+    	timeSpanMany2.AddMany(interval.New(timeStart5, timeEnd5), interval.New(timeStart6, timeEnd6))
+    
+    	resultMany := timeSpanMany1.Union(timeSpanMany2)
+    
+    	// [
+    	//	2020-10-17 07:00:00 +0000 UTC - 2020-10-17 10:00:00 +0000 UTC
+    	//	2020-10-17 11:00:00 +0000 UTC - 2020-10-17 17:00:00 +0000 UTC
+    	//	2020-10-17 21:00:00 +0000 UTC - 2020-10-17 23:00:00 +0000 UTC
+    	// ]
+    
+    	fmt.Println(resultMany.String())  
         				    			     
 }
 ```
