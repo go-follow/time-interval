@@ -32,7 +32,7 @@ func (s *SpanMany) Add(start time.Time, end time.Time) {
 }
 
 // AddMany adding several time slots at once to the existing one SpanMany
-func (s *SpanMany) AddMany(spans []Span) {
+func (s *SpanMany) AddMany(spans ...Span) {
 	if s.spans == nil || len(spans) == 0 {
 		return
 	}
@@ -154,7 +154,7 @@ func (s *SpanMany) Except(input Span) SpanMany {
 		if len(ex.spans) == 0 {
 			continue
 		}
-		result.AddMany(ex.spans)
+		result.AddMany(ex.spans...)
 	}
 	return result.Union()
 }
