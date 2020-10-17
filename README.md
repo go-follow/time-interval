@@ -60,6 +60,8 @@ func main() {
 ```
 ## examples
 * Union
+
+union operation concatenates and sorts the original result
 ```go
 package main
  
