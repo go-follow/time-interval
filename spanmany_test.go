@@ -302,7 +302,7 @@ func TestIntersectionMany(t *testing.T) {
 		excepted SpanMany
 	}{
 		{
-			name: "not_intersection",
+			name: "intersection",
 			newSpanMany: NewMany(
 				New(
 					time.Date(2020, 10, 12, 15, 0, 0, 0, time.UTC),

@@ -80,10 +80,9 @@ func main() {
     newInt2 := interval.New(timeStart2, timeEnd2)
     
     result := newInt.Intersection(newInt2)
-    fmt.Println(result) // 2020-10-17 10:00:00 +0000 UTC - 2020-10-17 19:00:00 +0000 UTC
+    fmt.Println(result.String()) // 2020-10-17 10:00:00 +0000 UTC - 2020-10-17 19:00:00 +0000 UTC
     // newIntMany := interval.NewMany(newInt, newInt2)
-    //result := newIntMany.Union()
-    
+    //result := newIntMany.Union()    
 }
 ```
 
