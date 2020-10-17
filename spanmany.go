@@ -22,6 +22,30 @@ func NewMany(spans ...Span) SpanMany {
 	}
 }
 
+// Add adding a time interval to SpanMany
+func (s *SpanMany) Add(start time.Time, end time.Time) {
+	if s == nil || s.spans == nil {
+		return
+	}
+	s.spans = append(s.spans, New(start, end))
+}
+
+// AddMany adding several time slots at once to the existing one SpanMany
+func (s *SpanMany) AddMany(spans []Span) {
+	if s.spans == nil || len(spans) == 0 {
+		return
+	}
+	s.spans = append(s.spans, spans...)
+}
+
+// Spans get an array of intervals
+func (s *SpanMany) Spans() []Span {
+	if s.spans == nil {
+		return []Span{}
+	}
+	return s.spans
+}
+
 // Sort sorting time intervals
 // st - sorting options:
 // Ascending sort Ascending (default)
