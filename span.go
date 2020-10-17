@@ -9,6 +9,7 @@ type Span struct {
 }
 
 // New initialization of a new time interval
+// ATTENTION - panic is possible
 // the beginning of the interval must necessarily be less than the end of the interval
 func New(start, end time.Time) Span {
 	if afterOrEqual(start, end) {
