@@ -295,15 +295,15 @@ func TestExceptionIfNotEqual(t *testing.T) {
 
 func TestIntersectionMany(t *testing.T) {
 	testCases := []struct {
-		name      string
-		newSpan   SpanMany
-		inputSpan Span
+		name        string
+		newSpanMany SpanMany
+		inputSpan   Span
 
 		excepted SpanMany
 	}{
 		{
 			name: "not_intersection",
-			newSpan: NewMany(
+			newSpanMany: NewMany(
 				New(
 					time.Date(2020, 10, 12, 15, 0, 0, 0, time.UTC),
 					time.Date(2020, 10, 12, 17, 0, 0, 0, time.UTC)),
@@ -340,7 +340,7 @@ func TestIntersectionMany(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			result := tc.newSpan.Intersection(tc.inputSpan)
+			result := tc.newSpanMany.Intersection(tc.inputSpan)
 			assert.Equal(t, tc.excepted, result)
 		})
 	}
@@ -420,6 +420,93 @@ func TestUnionMany(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			result := tc.newIntervalMany.Union(tc.inputIntervalMany)
+			assert.Equal(t, tc.excepted, result)
+		})
+	}
+}
+
+func TestExceptMany(t *testing.T) {
+	testCases := []struct {
+		name        string
+		newSpanMany SpanMany
+		inputSpan   Span
+
+		excepted SpanMany
+	}{
+		{
+			name: "many_result",
+			newSpanMany: NewMany(
+				New(
+					time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC),
+				),
+				New(
+					time.Date(2020, 10, 17, 14, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 15, 0, 0, 0, time.UTC),
+				),
+				New(
+					time.Date(2020, 10, 17, 12, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 16, 0, 0, 0, time.UTC),
+				),
+				New(
+					time.Date(2020, 10, 17, 12, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 14, 30, 0, 0, time.UTC),
+				),
+				New(
+					time.Date(2020, 10, 17, 14, 33, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 18, 0, 0, 0, time.UTC),
+				),
+			),
+			inputSpan: New(
+				time.Date(2020, 10, 17, 14, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 17, 15, 0, 0, 0, time.UTC),
+			),
+			excepted: NewMany(
+				New(
+					time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC),
+				),
+				New(
+					time.Date(2020, 10, 17, 12, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 14, 0, 0, 0, time.UTC),
+				),
+				New(
+					time.Date(2020, 10, 17, 15, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 18, 0, 0, 0, time.UTC),
+				),
+			),
+		},
+		{
+			name:        "empty_new_span",
+			newSpanMany: NewMany(),
+			inputSpan: New(
+				time.Date(2020, 10, 17, 14, 0, 0, 0, time.UTC),
+				time.Date(2020, 10, 17, 15, 0, 0, 0, time.UTC),
+			),
+			excepted: NewMany(),
+		},
+		{
+			name: "empty_input_span",
+			newSpanMany: NewMany(
+				New(
+					time.Date(2020, 10, 17, 22, 33, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 23, 7, 0, 0, time.UTC),
+				),
+			),
+			inputSpan: Span{},
+
+			excepted: NewMany(
+				New(
+					time.Date(2020, 10, 17, 22, 33, 0, 0, time.UTC),
+					time.Date(2020, 10, 17, 23, 7, 0, 0, time.UTC),
+				),
+			),
+		},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			result := tc.newSpanMany.Except(tc.inputSpan)
 			assert.Equal(t, tc.excepted, result)
 		})
 	}

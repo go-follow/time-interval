@@ -133,8 +133,23 @@ func (s *SpanMany) Intersection(input Span) SpanMany {
 	return NewMany(intersectionList...)
 }
 
-// Union concatenation of arrays of time intervals
-func (s SpanMany) Union(input ...SpanMany) SpanMany {
+// Except difference between each array element SpanMany and input Span  (s[i] \ input)
+// Returns the elements of SpanMany, where the time interval remains after the Except operation with input
+// Before returning the final result is sorted and merged
+func (s *SpanMany) Except(input Span) SpanMany {
+	result := NewMany()
+	for _, sp := range s.spans {
+		ex := sp.Except(input)
+		if len(ex.spans) == 0 {
+			continue
+		}
+		result.AddMany(ex.spans)
+	}
+	return result.Union()
+}
+
+// Union concatenation SpanMany of array SpanMany
+func (s *SpanMany) Union(input ...SpanMany) SpanMany {
 	var result []Span
 	for _, inp := range input {
 		s.spans = append(s.spans, inp.spans...)
