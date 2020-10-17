@@ -1,6 +1,9 @@
 package time_interval
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // Span time interval
 type Span struct {
@@ -29,6 +32,11 @@ func (s *Span) Start() time.Time {
 // End returning end time interval
 func (s *Span) End() time.Time {
 	return s.end
+}
+
+// String implementation interface stringer for Span
+func (s *Span) String() string {
+	return fmt.Sprintf("%v - %v", s.Start(), s.End())
 }
 
 // IsEmpty  defines empty spacing

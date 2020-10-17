@@ -1,4 +1,4 @@
-# time-interval [![license](https://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://github.com/go-follow/time-interval/blob/master/LICENSE)
+# time-interval [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://github.com/go-follow/time-interval/blob/master/LICENSE)
 
 This package helps to work with time intervals. The functionality allows you to perform the following basic operations:
 * Union - merging of time intervals
@@ -55,6 +55,36 @@ func main() {
     
     newIntMany := interval.NewMany(newInt, newInt2)
     result := newIntMany.Union()
-    fmt.Println(result.String())
+    fmt.Println(result.String()) // 2020-10-17 10:00:00 +0000 UTC - 2020-10-17 19:00:00 +0000 UTC
 }
 ```
+## examples
+* Intersection
+```go
+package main
+ 
+import (
+    "fmt"
+    "time"
+
+    interval "github.com/go-follow/time-interval"
+)
+
+func main() {
+    timeStart1 := time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC)
+    timeEnd1 := time.Date(2020, 10, 17, 12, 0, 0, 0, time.UTC)
+    timeStart2 := time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC)
+    timeEnd2 := time.Date(2020, 10, 17, 15, 0, 0, 0, time.UTC)
+    
+    newInt := interval.New(timeStart1, timeEnd1)
+    newInt2 := interval.New(timeStart2, timeEnd2)
+    
+    result := newInt.Intersection(newInt2)
+    fmt.Println(result) // 2020-10-17 10:00:00 +0000 UTC - 2020-10-17 19:00:00 +0000 UTC
+    // newIntMany := interval.NewMany(newInt, newInt2)
+    //result := newIntMany.Union()
+    
+}
+```
+
+

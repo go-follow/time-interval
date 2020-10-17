@@ -39,12 +39,13 @@ func (s *SpanMany) AddMany(spans []Span) {
 	s.spans = append(s.spans, spans...)
 }
 
-// String implementation interface stringer
+// String implementation interface stringer for SpanMany
 func (s *SpanMany) String() string {
-	str := ""
+	str := "["
 	for _, s := range s.spans {
 		str += fmt.Sprintf("\n%v - %v", s.Start(), s.End())
 	}
+	str += "\n]"
 	return str
 }
 
