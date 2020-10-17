@@ -96,7 +96,6 @@ func (s *Span) Union(input Span) SpanMany {
 		return NewMany(New(s.minStart(input), s.maxEnd(input)))
 	}
 	result := NewMany(New(s.start, s.end), New(input.start, input.end))
-	result.Sort()
 	return result
 }
 

@@ -392,11 +392,11 @@ func TestUnion(t *testing.T) {
 				time.Date(2020, 10, 1, 7, 0, 0, 0, time.UTC)),
 			excepted: NewMany(
 				New(
-					time.Date(2020, 10, 1, 4, 0, 0, 0, time.UTC),
-					time.Date(2020, 10, 1, 7, 0, 0, 0, time.UTC)),
-				New(
 					time.Date(2020, 10, 1, 15, 0, 0, 0, time.UTC),
-					time.Date(2020, 10, 1, 22, 0, 0, 0, time.UTC))),
+					time.Date(2020, 10, 1, 22, 0, 0, 0, time.UTC)),
+				New(
+					time.Date(2020, 10, 1, 4, 0, 0, 0, time.UTC),
+					time.Date(2020, 10, 1, 7, 0, 0, 0, time.UTC))),
 		},
 	}
 	for _, tc := range testCases {
