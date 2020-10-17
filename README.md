@@ -72,17 +72,39 @@ import (
 
 func main() {
     timeStart1 := time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC)
-    timeEnd1 := time.Date(2020, 10, 17, 12, 0, 0, 0, time.UTC)
-    timeStart2 := time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC)
-    timeEnd2 := time.Date(2020, 10, 17, 15, 0, 0, 0, time.UTC)
+    	timeEnd1 := time.Date(2020, 10, 17, 12, 0, 0, 0, time.UTC)
+    	timeStart2 := time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC)
+    	timeEnd2 := time.Date(2020, 10, 17, 15, 0, 0, 0, time.UTC)
+    	timeStart3 := time.Date(2020, 10, 17, 20, 0, 0, 0, time.UTC)
+    	timeEnd3 := time.Date(2020, 10, 17, 22, 0, 0, 0, time.UTC)
+    	timeStart4 := time.Date(2020, 10, 17, 18, 0, 0, 0, time.UTC)
+    	timeEnd4 :=	time.Date(2020, 10, 17, 23, 0, 0, 0, time.UTC)
+        timeStart5 := time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC)
+        timeEnd5 := time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC)
     
-    newInt := interval.New(timeStart1, timeEnd1)
-    newInt2 := interval.New(timeStart2, timeEnd2)
+    	newInt := interval.New(timeStart1, timeEnd1)
+    	newInt2 := interval.New(timeStart2, timeEnd2)
     
-    result := newInt.Intersection(newInt2)
-    fmt.Println(result.String()) // 2020-10-17 10:00:00 +0000 UTC - 2020-10-17 19:00:00 +0000 UTC
-    // newIntMany := interval.NewMany(newInt, newInt2)
-    //result := newIntMany.Union()    
+    	result := newInt.Intersection(newInt2)
+    	fmt.Println(result.String()) // 2020-10-17 10:00:00 +0000 UTC - 2020-10-17 12:00:00 +0000 UTC
+    
+    	timeStartInput := time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC)
+    	timeEndInput := time.Date(2020, 10, 17, 19, 0, 0, 0, time.UTC)
+    	intervalInput := interval.New(timeStartInput, timeEndInput)
+    	timeSpanMany := interval.NewMany(
+    		interval.New(timeStart1, timeEnd1),
+    		interval.New(timeStart2, timeEnd2),
+    		interval.New(timeStart3, timeEnd3),
+    		interval.New(timeStart4, timeEnd4),
+    		interval.New(timeStart5, timeEnd5),
+    	)
+    	resultMany := timeSpanMany.Intersection(intervalInput)
+    	// [
+    	//	2020-10-17 10:00:00 +0000 UTC - 2020-10-17 12:00:00 +0000 UTC
+    	//	2020-10-17 10:00:00 +0000 UTC - 2020-10-17 15:00:00 +0000 UTC
+    	//	2020-10-17 18:00:00 +0000 UTC - 2020-10-17 19:00:00 +0000 UTC
+    	// ]
+    	fmt.Println(resultMany.String())   
 }
 ```
 
