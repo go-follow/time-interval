@@ -1,6 +1,7 @@
 package time_interval
 
 import (
+	"fmt"
 	"sort"
 	"time"
 )
@@ -36,6 +37,15 @@ func (s *SpanMany) AddMany(spans []Span) {
 		return
 	}
 	s.spans = append(s.spans, spans...)
+}
+
+// String implementation interface stringer
+func (s *SpanMany) String() string {
+	str := ""
+	for _, s := range s.spans {
+		str += fmt.Sprintf("\n%v - %v", s.Start(), s.End())
+	}
+	return str
 }
 
 // Spans get an array of intervals
