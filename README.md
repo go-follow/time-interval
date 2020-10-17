@@ -55,6 +55,6 @@ func main() {
     
     newIntMany := interval.NewMany(newInt, newInt2)
     result := newIntMany.Union()
-    fmt.Println(result)
+    fmt.Println(result.String())
 }
 ```
