@@ -5,6 +5,7 @@ This package helps to work with time intervals. The functionality allows you to 
 * Intersection - finding intersections of regular intervals
 * Except - differentiation between fixed intervals
 * Equal - comparison of time intervals
+* IsIntersection - check for intersection of time intervals
 
 ## install
 ```
@@ -212,6 +213,49 @@ func main() {
     //	2020-10-17 18:00:00 +0000 UTC - 2020-10-17 19:00:00 +0000 UTC
     // ]
     fmt.Println(resultMany.String())   
+}
+```
+* Equal
+
+It is possible to pass an optional argument offset, which gives the possibility of a small error in the final result
+```go
+package main
+ 
+import (
+    "fmt"
+    "time"
+
+    interval "github.com/go-follow/time-interval"
+)
+
+func main() {
+    timeStart1 := time.Date(2020, 10, 18, 15, 0, 0, 0, time.UTC)
+    timeEnd1 := time.Date(2020, 10, 18, 21, 0, 0, 0, time.UTC)
+    timeStart2 := time.Date(2020, 10, 18, 14, 50, 0, 0, time.UTC)
+    timeEnd2 := time.Date(2020, 10, 18, 21, 10, 0, 0, time.UTC)
+    ti1 := interval.New(timeStart1, timeEnd1)
+    ti2 := interval.New(timeStart2, timeEnd2)
+    ti2AddSecond := interval.New(timeStart2, timeEnd2.Add(1 * time.Second))
+    // Equal without offset
+    fmt.Println(ti1.Equal(ti2)) // false    
+    // Equal with offset 10 minute
+    fmt.Println(ti1.Equal(ti2, time.Minute * 10)) // true
+    // Add 1 second to ti2
+    fmt.Println(ti1.Equal(ti2AddSecond, time.Minute * 10)) // false        
+    
+    // Equal for SpanMany
+    // If there is at least one match, return true
+    intervalMany := interval.NewMany(
+        interval.New(time.Date(2020, 10, 18, 9, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 10, 0, 0, 12, time.UTC)),
+        interval.New(time.Date(2020, 10, 18, 19, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 20, 0, 0, 0, time.UTC)),
+        interval.New(time.Date(2020, 10, 18, 16, 55, 0, 0, time.UTC), time.Date(2020, 10, 18, 18, 0, 0, 11, time.UTC)),
+    )
+    // Equal without offset
+    intervalInput := interval.New(time.Date(2020, 10, 18, 17, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 18, 5, 0, 11, time.UTC))
+    fmt.Println(intervalMany.Equal(intervalInput)) // false
+    // Equal with offset
+    fmt.Println(intervalMany.Equal(intervalInput, time.Minute * 5)) // true
+    fmt.Println(intervalMany.Equal(intervalInput, time.Minute * 4)) // false      				    			     
 }
 ```
 
