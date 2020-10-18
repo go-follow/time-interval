@@ -258,5 +258,46 @@ func main() {
     fmt.Println(intervalMany.Equal(intervalInput, time.Minute * 4)) // false      				    			     
 }
 ```
+* IsIntersection
+
+It is possible to pass an optional argument offset, which gives the possibility of a small error in the final result
+```go
+package main
+ 
+import (
+    "fmt"
+    "time"
+
+    interval "github.com/go-follow/time-interval"
+)
+
+func main() {
+    timeStart1 := time.Date(2020, 10, 18, 17, 30, 0, 0, time.UTC)
+    timeEnd1 := time.Date(2020, 10, 18, 18, 22, 0, 0, time.UTC)
+    timeStart2 := time.Date(2020, 10, 18, 16, 0, 0, 0, time.UTC)
+    timeEnd2 := time.Date(2020, 10, 18, 17, 30, 7, 0, time.UTC)
+    ti1 := interval.New(timeStart1, timeEnd1)
+    ti2 := interval.New(timeStart2, timeEnd2)
+    // IsIntersection without offset
+    fmt.Println(ti1.IsIntersection(ti2)) // true
+    // IsIntersection with offset 5 second
+    fmt.Println(ti1.IsIntersection(ti2, time.Second * 5)) // true
+    // IsIntersection with offset 10 second
+    fmt.Println(ti1.IsIntersection(ti2, time.Second * 10)) // false        
+    
+    // IsIntersection for SpanMany
+    // If there is at least one match, return true
+    intervalMany := interval.NewMany(
+        interval.New(time.Date(2020, 10, 18, 9, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 10, 0, 0, 0, time.UTC)),
+        interval.New(time.Date(2020, 10, 18, 16, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 17, 5, 0, 0, time.UTC)),
+        interval.New(time.Date(2020, 10, 18, 19, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 20, 0, 0, 0, time.UTC)),
+    )
+    // IsIntersection without offset
+    intervalInput := interval.New(time.Date(2020, 10, 18, 17, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 18, 0, 0, 0, time.UTC))
+    fmt.Println(intervalMany.IsIntersection(intervalInput)) // true
+    // IsIntersection with offset
+    fmt.Println(intervalMany.IsIntersection(intervalInput, time.Minute * 5)) // false
+    fmt.Println(intervalMany.IsIntersection(intervalInput, time.Minute * 3)) // true    				    			     
+}
 
 
