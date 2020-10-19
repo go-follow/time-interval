@@ -1,4 +1,4 @@
-# time-interval [![godoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](github.com/go-follow/time-interval) [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://github.com/go-follow/time-interval/blob/master/LICENSE)
+# time-interval [![godoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/go-follow/time-interval) [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://github.com/go-follow/time-interval/blob/master/LICENSE)
 
 This package helps to work with time intervals. The functionality allows you to perform the following basic operations:
 * Union - merging of time intervals
