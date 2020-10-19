@@ -6,12 +6,12 @@ import (
 	"time"
 )
 
-// SpanMany  model containing more than one time interval
+// SpanMany  model containing more than one time interval.
 type SpanMany struct {
 	spans []Span
 }
 
-// NewMany initialization for multiple time intervals
+// NewMany initialization for multiple time intervals.
 func NewMany(spans ...Span) SpanMany {
 	if len(spans) == 0 {
 		return SpanMany{
@@ -23,7 +23,7 @@ func NewMany(spans ...Span) SpanMany {
 	}
 }
 
-// Add adding a time interval to SpanMany
+// Add adding a time interval to SpanMany.
 func (s *SpanMany) Add(start time.Time, end time.Time) {
 	if s == nil || s.spans == nil {
 		return
@@ -31,7 +31,7 @@ func (s *SpanMany) Add(start time.Time, end time.Time) {
 	s.spans = append(s.spans, New(start, end))
 }
 
-// AddMany adding several time slots at once to the existing one SpanMany
+// AddMany adding several time slots at once to the existing one SpanMany.
 func (s *SpanMany) AddMany(spans ...Span) {
 	if s.spans == nil || len(spans) == 0 {
 		return
@@ -39,7 +39,7 @@ func (s *SpanMany) AddMany(spans ...Span) {
 	s.spans = append(s.spans, spans...)
 }
 
-// String implementation interface stringer for SpanMany
+// String implementation interface stringer for SpanMany.
 func (s *SpanMany) String() string {
 	str := "["
 	for _, s := range s.spans {
@@ -49,7 +49,7 @@ func (s *SpanMany) String() string {
 	return str
 }
 
-// Spans get an array of intervals
+// Spans get an array of intervals.
 func (s *SpanMany) Spans() []Span {
 	if s.spans == nil {
 		return []Span{}
@@ -57,7 +57,8 @@ func (s *SpanMany) Spans() []Span {
 	return s.spans
 }
 
-// Sort sorting time intervals
+// Sort sorting time intervals.
+
 // st - sorting options:
 // Ascending sort Ascending (default)
 // Descending sort descending
@@ -76,9 +77,10 @@ func (s *SpanMany) Sort(st ...SortType) {
 	})
 }
 
-// Equal full comparison of SpanMany of time intervals with one interval
-// If there is at least one match, return true
-// offset - possible deviation from the time interval
+// Equal full comparison of SpanMany of time intervals with one interval.
+// If there is at least one match, return true.
+
+// offset - possible deviation from the time interval.
 func (s *SpanMany) Equal(input Span, offset ...time.Duration) bool {
 	for _, s := range s.spans {
 		if s.Equal(input, offset...) {
@@ -88,9 +90,10 @@ func (s *SpanMany) Equal(input Span, offset ...time.Duration) bool {
 	return false
 }
 
-// IsIntersection checking for intersection of an interval with one of SpanMany
-// If there is at least one match, return true
-// offset - possible deviation from the time interval
+// IsIntersection checking for intersection of an interval with one of SpanMany.
+// If there is at least one match, return true.
+
+// offset - possible deviation from the time interval.
 func (s *SpanMany) IsIntersection(input Span, offset ...time.Duration) bool {
 	if len(s.spans) == 0 {
 		return false
@@ -103,7 +106,8 @@ func (s *SpanMany) IsIntersection(input Span, offset ...time.Duration) bool {
 	return false
 }
 
-// ExceptionIfIntersection excludes periods from the SpanMany if there is an intersection with another SpanMany
+// ExceptionIfIntersection excludes periods from the SpanMany if there is an intersection with another SpanMany.
+
 // offset - possible deviation from the time interval
 func (s *SpanMany) ExceptionIfIntersection(input SpanMany, offset ...time.Duration) SpanMany {
 	var listSpans []Span
@@ -116,7 +120,8 @@ func (s *SpanMany) ExceptionIfIntersection(input SpanMany, offset ...time.Durati
 	return NewMany(listSpans...)
 }
 
-// ExceptionIfNotEqual excludes periods from the SpanMany if it does not meet any equality with another SpanMany
+// ExceptionIfNotEqual excludes periods from the SpanMany if it does not meet any equality with another SpanMany.
+
 // offset - possible deviation from the time interval
 func (s *SpanMany) ExceptionIfNotEqual(input SpanMany, offset ...time.Duration) SpanMany {
 	var listSpans []Span
@@ -129,7 +134,7 @@ func (s *SpanMany) ExceptionIfNotEqual(input SpanMany, offset ...time.Duration) 
 	return NewMany(listSpans...)
 }
 
-// Intersection intersecting time slots (SpanMany) with one time slot (Span)
+// Intersection intersecting time slots (SpanMany) with one time slot (Span).
 func (s *SpanMany) Intersection(input Span) SpanMany {
 	if len(s.spans) == 0 {
 		return NewMany()
@@ -144,9 +149,9 @@ func (s *SpanMany) Intersection(input Span) SpanMany {
 	return NewMany(intersectionList...)
 }
 
-// Except difference between each array element SpanMany and input Span  (s[i] \ input)
-// Returns the elements of SpanMany, where the time interval remains after the Except operation with input
-// Before returning the final result is sorted and merged
+// Except difference between each array element SpanMany and input Span  (s[i] \ input).
+// Returns the elements of SpanMany, where the time interval remains after the Except operation with input.
+// Before returning the final result is sorted and merged.
 func (s *SpanMany) Except(input Span) SpanMany {
 	result := NewMany()
 	for _, sp := range s.spans {
@@ -159,7 +164,7 @@ func (s *SpanMany) Except(input Span) SpanMany {
 	return result.Union()
 }
 
-// Union concatenation SpanMany of array SpanMany
+// Union concatenation SpanMany of array SpanMany.
 func (s *SpanMany) Union(input ...SpanMany) SpanMany {
 	var result []Span
 	for _, inp := range input {

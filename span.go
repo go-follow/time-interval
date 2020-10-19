@@ -12,8 +12,9 @@ type Span struct {
 }
 
 // New initialization of a new time interval.
+
 // ATTENTION - panic is possible.
-// the beginning of the interval must necessarily be less than the end of the interval
+// The beginning of the interval must necessarily be less than the end of the interval.
 func New(start, end time.Time) Span {
 	if afterOrEqual(start, end) {
 		panic("time start cannot be more time end")
@@ -45,6 +46,7 @@ func (s *Span) IsEmpty() bool {
 }
 
 // Equal full equals of two time slots
+
 // offset - possible deviation from the time interval
 func (s *Span) Equal(input Span, offset ...time.Duration) bool {
 	defaultOffset := time.Second * 0
@@ -59,6 +61,7 @@ func (s *Span) Equal(input Span, offset ...time.Duration) bool {
 }
 
 // IsIntersection check for intersection of time intervals
+
 // offset - possible deviation from the time interval
 func (s *Span) IsIntersection(input Span, offset ...time.Duration) bool {
 	defaultOffset := time.Second * 0
@@ -90,7 +93,7 @@ func (s *Span) Intersection(input Span) Span {
 	panic("unknown case for Intersection")
 }
 
-// Union union of two time intervals
+// Union union of two time intervals.
 func (s *Span) Union(input Span) SpanMany {
 	if s.isIntersectionEqual(input) {
 		return NewMany(New(s.minStart(input), s.maxEnd(input)))
@@ -99,7 +102,7 @@ func (s *Span) Union(input Span) SpanMany {
 	return result
 }
 
-// Except  difference in time intervals - from input (s \ input)
+// Except  difference in time intervals - from input (s \ input).
 func (s *Span) Except(input Span) SpanMany {
 	if !s.IsIntersection(input) {
 		return NewMany(New(s.start, s.end))
@@ -136,8 +139,8 @@ func (s *Span) maxEnd(input Span) time.Time {
 	return input.end
 }
 
-// isIntersectionForEqual  checking for the intersection of time intervals.
-// The difference from the public method is that it includes cases at the junction
+// isIntersectionEqual checking for the intersection of time intervals.
+// The difference from the public method is that it includes cases at the junction.
 func (s *Span) isIntersectionEqual(input Span) bool {
 	return beforeOrEqual(s.start, input.end) && afterOrEqual(s.end, input.start)
 }
