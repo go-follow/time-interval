@@ -293,6 +293,73 @@ func TestExceptionIfNotEqual(t *testing.T) {
 	}
 }
 
+func TestExceptionIfNotContains(t *testing.T) {
+	testCases := []struct {
+		name              string
+		newIntervalMany   SpanMany
+		inputIntervalMany SpanMany
+
+		wantResult SpanMany
+	}{
+		{
+			newIntervalMany: NewMany(
+				New(time.Date(2020, 11, 20, 8, 0, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 8, 30, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 9, 30, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 10, 0, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 9, 30, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 10, 30, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 10, 0, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 11, 0, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 1, 0, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 1, 5, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 1, 5, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 1, 10, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 1, 30, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 1, 33, 0, 0, time.UTC)),
+			),
+			inputIntervalMany: NewMany(
+				New(time.Date(2020, 11, 20, 0, 0, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 2, 0, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 7, 30, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 8, 35, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 8, 30, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 9, 29, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 8, 30, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 9, 30, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 10, 0, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 11, 0, 0, 1, time.UTC)),
+				New(time.Date(2020, 11, 20, 10, 0, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 11, 0, 0, 0, time.UTC)),
+			),
+
+			wantResult: NewMany(
+				New(
+					time.Date(2020, 11, 20, 8, 30, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 9, 30, 0, 0, time.UTC)),
+				New(
+					time.Date(2020, 11, 20, 10, 0, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 11, 0, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 1, 0, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 1, 5, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 1, 5, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 1, 10, 0, 0, time.UTC)),
+				New(time.Date(2020, 11, 20, 1, 30, 0, 0, time.UTC),
+					time.Date(2020, 11, 20, 1, 33, 0, 0, time.UTC)),
+			),
+		},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			listSpan := tc.newIntervalMany.ExceptionIfNotContains(tc.inputIntervalMany)
+			assert.Equal(t, tc.wantResult, listSpan)
+		})
+	}
+}
+
 func TestIntersectionMany(t *testing.T) {
 	testCases := []struct {
 		name        string

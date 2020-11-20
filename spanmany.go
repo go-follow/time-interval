@@ -95,11 +95,19 @@ func (s *SpanMany) Equal(input Span, offset ...time.Duration) bool {
 
 // offset - possible deviation from the time interval.
 func (s *SpanMany) IsIntersection(input Span, offset ...time.Duration) bool {
-	if len(s.spans) == 0 {
-		return false
-	}
 	for _, s := range s.spans {
 		if s.IsIntersection(input, offset...) {
+			return true
+		}
+	}
+	return false
+}
+
+// IsContains checking for contains of SpanMany of time intervals with one interval.
+// If there is at least one match, return true.
+func (s *SpanMany) IsContains(input Span, offset ...time.Duration) bool {
+	for _, s := range s.spans {
+		if s.IsContains(input, offset...) {
 			return true
 		}
 	}
@@ -128,6 +136,18 @@ func (s *SpanMany) ExceptionIfNotEqual(input SpanMany, offset ...time.Duration) 
 	for _, s := range s.spans {
 		if input.Equal(s, offset...) {
 			listSpans = append(listSpans, s)
+			continue
+		}
+	}
+	return NewMany(listSpans...)
+}
+
+// ExceptionIfNotContains excludes periods from SpanMany if it does not contain any interval with another SpanMany.
+func (s *SpanMany) ExceptionIfNotContains(input SpanMany, offset ...time.Duration) SpanMany {
+	var listSpans []Span
+	for _, sp := range s.spans {
+		if input.IsContains(sp, offset...) {
+			listSpans = append(listSpans, sp)
 			continue
 		}
 	}
