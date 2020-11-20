@@ -71,6 +71,16 @@ func (s *Span) IsIntersection(input Span, offset ...time.Duration) bool {
 	return s.start.Add(defaultOffset).Before(input.end) && s.end.After(input.start.Add(defaultOffset))
 }
 
+//IsContains check contains interval
+func (s *Span) IsContains(input Span, offset ...time.Duration) bool {
+	defaultOffset := time.Second * 0
+	if len(offset) > 0 {
+		defaultOffset = offset[0]
+	}
+	return beforeOrEqual(s.start.Add(-defaultOffset), input.start) &&
+		afterOrEqual(s.end.Add(defaultOffset), input.end)
+}
+
 // Intersection intersection of two time intervals
 func (s *Span) Intersection(input Span) Span {
 	if !s.IsIntersection(input) {

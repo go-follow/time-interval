@@ -509,3 +509,119 @@ func TestExcept(t *testing.T) {
 		})
 	}
 }
+
+func TestIsContains(t *testing.T) {
+	testCases := []struct {
+		name      string
+		newSpan   Span
+		inputSpan Span
+		offset    time.Duration
+		excepted  bool
+	}{
+		{
+			name: "contains",
+			newSpan: New(
+				time.Date(2020, 11, 20, 7, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 11, 20, 8, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 8, 30, 0, 0, time.UTC),
+			),
+			excepted: true,
+		},
+		{
+			name: "equal",
+			newSpan: New(
+				time.Date(2020, 11, 20, 7, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 11, 20, 7, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC),
+			),
+			excepted: true,
+		},
+		{
+			name: "reverse_contains",
+			newSpan: New(
+				time.Date(2020, 11, 20, 8, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 8, 30, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 11, 20, 7, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC),
+			),
+			offset: time.Hour,
+			excepted: true,
+		},
+		{
+			name: "not_contains_left",
+			newSpan: New(
+				time.Date(2020, 11, 20, 7, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 11, 20, 6, 59, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC),
+			),
+			excepted: false,
+		},
+		{
+			name: "contains_left_offset",
+			newSpan: New(
+				time.Date(2020, 11, 20, 7, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 11, 20, 6, 59, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC),
+			),
+			offset: time.Minute,
+			excepted: true,
+		},
+		{
+			name: "not_contains_right",
+			newSpan: New(
+				time.Date(2020, 11, 20, 7, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 11, 20, 8, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 1, time.UTC),
+			),
+			excepted: false,
+		},
+		{
+			name: "contains_right_offset",
+			newSpan: New(
+				time.Date(2020, 11, 20, 7, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 11, 20, 8, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 1, time.UTC),
+			),
+			offset: time.Second,
+			excepted: true,
+		},
+		{
+			name: "many_not_contains",
+			newSpan: New(
+				time.Date(2020, 11, 20, 7, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 9, 0, 0, 0, time.UTC),
+			),
+			inputSpan: New(
+				time.Date(2020, 11, 20, 1, 0, 0, 0, time.UTC),
+				time.Date(2020, 11, 20, 5, 0, 0, 0, time.UTC),
+			),
+			excepted: false,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := tc.newSpan.IsContains(tc.inputSpan, tc.offset)
+			assert.Equal(t, tc.excepted, result)
+		})
+	}
+}
