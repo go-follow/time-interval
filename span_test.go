@@ -1,4 +1,4 @@
-package time_interval
+package timeinterval
 
 import (
 	"testing"
