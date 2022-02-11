@@ -15,26 +15,9 @@ go get github.com/go-follow/time-interval
 ## usage
 To start using the functionality, you need to initialize a time slot or time slots.
 Attention: when initializing intervals, it is important to know that the end date of 
-the interval must be greater than the start date of the interval, otherwise there will be panic.
+the interval must be greater than the start date of the interval.
 
-An example of an example where panic: time start cannot be more time end
-```go
-package main
- 
-import (    
-    "time"
-
-    interval "github.com/go-follow/time-interval"
-)
-
-func main() {
-    timeStart := time.Date(2020, 10, 17, 23, 0, 0, 0, time.UTC)
-    timeEnd := time.Date(2020, 10, 17, 15, 0, 0, 0, time.UTC)
-    interval.New(timeStart, timeEnd)
-}
-```
-
-An example of using a package correctly
+An example of using a package
 ```go
 package main
  
@@ -51,8 +34,14 @@ func main() {
     timeStart2 := time.Date(2020, 10, 17, 14, 0, 0, 0, time.UTC)
     timeEnd2 := time.Date(2020, 10, 17, 19, 0, 0, 0, time.UTC)
     
-    newInt := interval.New(timeStart1, timeEnd1)
-    newInt2 := interval.New(timeStart2, timeEnd2)
+    newInt, err := interval.New(timeStart1, timeEnd1)
+    if err != nil {
+        log.Fatal(err)
+    }
+    newInt2, err := interval.New(timeStart2, timeEnd2)
+    if err != nil {
+        log.Fatal(err)
+    }
     
     newIntMany := interval.NewMany(newInt, newInt2)
     result := newIntMany.Union()
@@ -80,8 +69,14 @@ func main() {
     timeStart2 := time.Date(2020, 10, 18, 11, 0, 0, 0, time.UTC)
     timeEnd2 := time.Date(2020, 10, 18, 15, 0, 0, 0, time.UTC)
 
-    ti1 := interval.New(timeStart1, timeEnd1)
-    ti2 := interval.New(timeStart2, timeEnd2)
+    ti1, err := interval.New(timeStart1, timeEnd1)
+    if err != nil {
+        log.Fatal(err)
+    }
+    ti2, err := interval.New(timeStart2, timeEnd2)
+    if err != nil {
+        log.Fatal(err)
+    }
     
     // ti1 \ ti2
     ti1ExceptTi2 := ti1.Except(ti2)
@@ -90,16 +85,33 @@ func main() {
     // ti2 \ ti1
     ti2ExceptTi1 := ti2.Except(ti1)
     fmt.Println(ti2ExceptTi1.String()) // [ 2020-10-18 12:00:00 +0000 UTC - 2020-10-18 15:00:00 +0000 UTC ]
-    
+
+    ti1, err := interval.New(time.Date(2020, 10, 18, 7, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 10, 0, 0, 0, time.UTC))
+    if err != nil {
+        log.Fatal(err)
+    }
+    ti2, err := interval.New(time.Date(2020, 10, 18, 14, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 15, 0, 0, 0, time.UTC))
+    if err != nil {
+        log.Fatal(err)
+    }
+    ti3, err := interval.New(interval.New(time.Date(2020, 10, 18, 12, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 16, 0, 0, 0, time.UTC))
+    if err != nil {
+        log.Fatal(err)
+    }
+    ti4, err := interval.New(time.Date(2020, 10, 18, 12, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 14, 30, 0, 0, time.UTC))
+    if err != nil {
+        log.Fatal(err)
+    }
+    ti5, err := interval.New(time.Date(2020, 10, 18, 14, 33, 0, 0, time.UTC), time.Date(2020, 10, 18, 18, 0, 0, 0, time.UTC)),
+    if err != nil {
+        log.Fatal(err)
+    }
     // Except for SpanMany
-    intervalMany := interval.NewMany(
-        interval.New(time.Date(2020, 10, 18, 7, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 10, 0, 0, 0, time.UTC)),
-        interval.New(time.Date(2020, 10, 18, 14, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 15, 0, 0, 0, time.UTC)),
-        interval.New(time.Date(2020, 10, 18, 12, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 16, 0, 0, 0, time.UTC)),
-        interval.New(time.Date(2020, 10, 18, 12, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 14, 30, 0, 0, time.UTC)),
-        interval.New(time.Date(2020, 10, 18, 14, 33, 0, 0, time.UTC), time.Date(2020, 10, 18, 18, 0, 0, 0, time.UTC)),
-    )
-    intervalInput := interval.New(time.Date(2020, 10, 18, 14, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 15, 0, 0, 0, time.UTC))
+    intervalMany := interval.NewMany(ti1, ti2, ti3, ti4, ti5)
+    intervalInput, err := interval.New(time.Date(2020, 10, 18, 14, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 15, 0, 0, 0, time.UTC))
+    if err != nil {
+        log.Fatal(err)
+    }
     exceptMany := intervalMany.Except(intervalInput)
 
     // [
@@ -138,22 +150,45 @@ func main() {
     timeStart6 := time.Date(2020, 10, 17, 11, 0, 0, 0, time.UTC)
     timeEnd6 := time.Date(2020, 10, 17, 15, 0, 0, 0, time.UTC)
     
-    timeSpan := interval.New(timeStart1, timeEnd1)
-    result := timeSpan.Union(interval.New(timeStart3, timeEnd3))
+    timeSpan, err := interval.New(timeStart1, timeEnd1)
+    if err != nil {
+        log.Fatal(err)
+    }
+    timeInput2, err := interval.New(timeStart2, timeEnd2)
+    if err != nil {
+        log.Fatal(err)
+    }
+    timeInput3, err := interval.New(timeStart3, timeEnd3)
+    if err != nil {
+        log.Fatal(err)
+    }
+    result := timeSpan.Union(timeInput)
 
     // [
     //	2020-10-17 12:00:00 +0000 UTC - 2020-10-17 17:00:00 +0000 UTC
     // ]
     fmt.Println(result.String())
 
+   
+
     timeSpanMany1 := interval.NewMany(
         timeSpan,
-        interval.New(timeStart2, timeEnd2),
-        interval.New(timeStart3, timeEnd3),
+        timeInput2,
+        timeInput3
     )
     timeSpanMany2 := interval.NewMany()
-    timeSpanMany2.Add(timeStart4, timeEnd4)
-    timeSpanMany2.AddMany(interval.New(timeStart5, timeEnd5), interval.New(timeStart6, timeEnd6))
+    if err := timeSpanMany2.Add(timeStart4, timeEnd4); err != nil {
+        log.Fatal(err)
+    }
+    timeInput5, err := interval.New(timeStart5, timeEnd5)
+    if err != nil {
+        log.Fatal(err)
+    }
+    timeInput6, err := interval.New(timeStart6, timeEnd6)
+    if err != nil {
+        log.Fatal(err)
+    }
+    timeSpanMany2.AddMany(timeInput5, timeInput6)
 
     resultMany := timeSpanMany1.Union(timeSpanMany2)
 
@@ -190,22 +225,37 @@ func main() {
     timeStart5 := time.Date(2020, 10, 17, 7, 0, 0, 0, time.UTC)
     timeEnd5 := time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC)
 
-    newInt := interval.New(timeStart1, timeEnd1)
-    newInt2 := interval.New(timeStart2, timeEnd2)
+    newInt, err := interval.New(timeStart1, timeEnd1)
+    if err != nil {
+        log.Fatal(err)
+    }
+    newInt2, err := interval.New(timeStart2, timeEnd2)
+    if err != nil {
+        log.Fatal(err)
+    }
 
     result := newInt.Intersection(newInt2)
     fmt.Println(result.String()) // 2020-10-17 10:00:00 +0000 UTC - 2020-10-17 12:00:00 +0000 UTC
 
     timeStartInput := time.Date(2020, 10, 17, 10, 0, 0, 0, time.UTC)
     timeEndInput := time.Date(2020, 10, 17, 19, 0, 0, 0, time.UTC)
-    intervalInput := interval.New(timeStartInput, timeEndInput)
-    timeSpanMany := interval.NewMany(
-        interval.New(timeStart1, timeEnd1),
-        interval.New(timeStart2, timeEnd2),
-        interval.New(timeStart3, timeEnd3),
-        interval.New(timeStart4, timeEnd4),
-        interval.New(timeStart5, timeEnd5),
-    )
+    intervalInput, err := interval.New(timeStartInput, timeEndInput)
+    if err != nil {
+        log.Fatal(err)
+    }
+    newInt3, err := interval.New(timeStart3, timeEnd3)
+    if err != nil {
+        log.Fatal(err)
+    }
+    newInt4, err := interval.New(timeStart4, timeEnd4)
+    if err != nil {
+        log.Fatal(err)
+    }
+    newInt5, err := interval.New(timeStart5, timeEnd5)
+    if err != nil {
+        log.Fatal(err)
+    }
+    timeSpanMany := interval.NewMany(newInt, newInt2, newInt3, newInt4, newInt5)
     resultMany := timeSpanMany.Intersection(intervalInput)
     // [
     //	2020-10-17 10:00:00 +0000 UTC - 2020-10-17 12:00:00 +0000 UTC
@@ -233,9 +283,18 @@ func main() {
     timeEnd1 := time.Date(2020, 10, 18, 21, 0, 0, 0, time.UTC)
     timeStart2 := time.Date(2020, 10, 18, 14, 50, 0, 0, time.UTC)
     timeEnd2 := time.Date(2020, 10, 18, 21, 10, 0, 0, time.UTC)
-    ti1 := interval.New(timeStart1, timeEnd1)
-    ti2 := interval.New(timeStart2, timeEnd2)
-    ti2AddSecond := interval.New(timeStart2, timeEnd2.Add(1 * time.Second))
+    ti1, err := interval.New(timeStart1, timeEnd1)
+    if err != nil {
+        log.Fatal(err)
+    }
+    ti2, err := interval.New(timeStart2, timeEnd2)
+    if err != nil {
+        log.Fatal(err)
+    }
+    ti2AddSecond, err := interval.New(timeStart2, timeEnd2.Add(1 * time.Second))
+    if err != nil {
+        log.Fatal(err)
+    }
     // Equal without offset
     fmt.Println(ti1.Equal(ti2)) // false    
     // Equal with offset 10 minute
@@ -245,13 +304,25 @@ func main() {
     
     // Equal for SpanMany
     // If there is at least one match, return true
-    intervalMany := interval.NewMany(
-        interval.New(time.Date(2020, 10, 18, 9, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 10, 0, 0, 12, time.UTC)),
-        interval.New(time.Date(2020, 10, 18, 19, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 20, 0, 0, 0, time.UTC)),
-        interval.New(time.Date(2020, 10, 18, 16, 55, 0, 0, time.UTC), time.Date(2020, 10, 18, 18, 0, 0, 11, time.UTC)),
-    )
+
+    newInt1, err := interval.New(time.Date(2020, 10, 18, 9, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 10, 0, 0, 12, time.UTC))
+    if err != nil {
+        log.Fatal(err)
+    }
+    newInt2, err := interval.New(time.Date(2020, 10, 18, 19, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 20, 0, 0, 0, time.UTC))
+    if err != nil {
+        log.Fatal(err)
+    }
+    newInt3, err := interval.New(time.Date(2020, 10, 18, 16, 55, 0, 0, time.UTC), time.Date(2020, 10, 18, 18, 0, 0, 11, time.UTC))
+    if err != nil {
+        log.Fatal(err)
+    }
+    intervalMany := interval.NewMany(newInt1, newInt2, newInt3)
     // Equal without offset
-    intervalInput := interval.New(time.Date(2020, 10, 18, 17, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 18, 5, 0, 11, time.UTC))
+    intervalInput, err := interval.New(time.Date(2020, 10, 18, 17, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 18, 5, 0, 11, time.UTC))
+    if err != nil {
+        log.Fatal(err)
+    }
     fmt.Println(intervalMany.Equal(intervalInput)) // false
     // Equal with offset
     fmt.Println(intervalMany.Equal(intervalInput, time.Minute * 5)) // true
@@ -276,8 +347,14 @@ func main() {
     timeEnd1 := time.Date(2020, 10, 18, 18, 22, 0, 0, time.UTC)
     timeStart2 := time.Date(2020, 10, 18, 16, 0, 0, 0, time.UTC)
     timeEnd2 := time.Date(2020, 10, 18, 17, 30, 7, 0, time.UTC)
-    ti1 := interval.New(timeStart1, timeEnd1)
-    ti2 := interval.New(timeStart2, timeEnd2)
+    ti1, err := interval.New(timeStart1, timeEnd1)
+    if err != nil {
+        log.Fatal(err)
+    }
+    ti2, err := interval.New(timeStart2, timeEnd2)
+    if err  != nil {
+        log.Fatal(err)
+    }
     // IsIntersection without offset
     fmt.Println(ti1.IsIntersection(ti2)) // true
     // IsIntersection with offset 5 second
@@ -287,13 +364,22 @@ func main() {
     
     // IsIntersection for SpanMany
     // If there is at least one match, return true
-    intervalMany := interval.NewMany(
-        interval.New(time.Date(2020, 10, 18, 9, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 10, 0, 0, 0, time.UTC)),
-        interval.New(time.Date(2020, 10, 18, 16, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 17, 5, 0, 0, time.UTC)),
-        interval.New(time.Date(2020, 10, 18, 19, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 20, 0, 0, 0, time.UTC)),
-    )
+
+    newInt1, err := interval.New(time.Date(2020, 10, 18, 9, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 10, 0, 0, 0, time.UTC))
+    if err != nil {
+        log.Fatal(err)
+    }
+    newInt2, err := interval.New(time.Date(2020, 10, 18, 16, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 17, 5, 0, 0, time.UTC))
+    if err != nil {
+        log.Fatal(err)
+    }
+    newInt3, err := interval.New(time.Date(2020, 10, 18, 19, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 20, 0, 0, 0, time.UTC))
+    intervalMany := interval.NewMany(newInt1, newInt2, newInt3)
     // IsIntersection without offset
-    intervalInput := interval.New(time.Date(2020, 10, 18, 17, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 18, 0, 0, 0, time.UTC))
+    intervalInput, err := interval.New(time.Date(2020, 10, 18, 17, 0, 0, 0, time.UTC), time.Date(2020, 10, 18, 18, 0, 0, 0, time.UTC))
+    if err != nil {
+        log.Fatal(err)
+    }
     fmt.Println(intervalMany.IsIntersection(intervalInput)) // true
     // IsIntersection with offset
     fmt.Println(intervalMany.IsIntersection(intervalInput, time.Minute * 5)) // false
