@@ -1,6 +1,7 @@
 package timeinterval
 
 import (
+	"errors"
 	"fmt"
 	"time"
 )
@@ -15,14 +16,14 @@ type Span struct {
 
 // ATTENTION - panic is possible.
 // The beginning of the interval must necessarily be less than the end of the interval.
-func New(start, end time.Time) Span {
+func New(start, end time.Time) (Span, error) {
 	if afterOrEqual(start, end) {
-		panic("time start cannot be more time end")
+		return Span{}, errors.New("time start cannot be more time end")
 	}
 	return Span{
 		start: start,
 		end:   end,
-	}
+	}, nil
 }
 
 // Start returning start time interval
@@ -88,51 +89,89 @@ func (s *Span) Intersection(input Span) Span {
 	}
 	if afterOrEqual(s.end, input.start) &&
 		beforeOrEqual(s.start, input.start) && beforeOrEqual(s.end, input.end) {
-		return New(input.start, s.end)
+		return Span{
+			start: input.start,
+			end:   s.end,
+		}
 	}
 	if beforeOrEqual(s.start, input.end) &&
 		afterOrEqual(s.end, input.end) && afterOrEqual(s.start, input.start) {
-		return New(s.start, input.end)
+		return Span{
+			start: s.start,
+			end:   input.end,
+		}
 	}
 	if afterOrEqual(s.start, input.start) && beforeOrEqual(s.end, input.end) {
-		return New(s.start, s.end)
+		return Span{
+			start: s.start,
+			end:   s.end,
+		}
 	}
 	if beforeOrEqual(s.start, input.start) && afterOrEqual(s.end, input.end) {
-		return New(input.start, input.end)
+		return Span{
+			start: input.start,
+			end:   input.end,
+		}
 	}
-	panic("unknown case for Intersection")
+	return Span{}
 }
 
 // Union union of two time intervals.
 func (s *Span) Union(input Span) SpanMany {
 	if s.isIntersectionEqual(input) {
-		return NewMany(New(s.minStart(input), s.maxEnd(input)))
+		return NewMany(Span{
+			start: s.minStart(input),
+			end:   s.maxEnd(input),
+		})
 	}
-	result := NewMany(New(s.start, s.end), New(input.start, input.end))
+	result := NewMany(
+		Span{
+			start: s.start,
+			end:   s.end,
+		},
+		Span{
+			start: input.start,
+			end:   input.end,
+		})
 	return result
 }
 
 // Except  difference in time intervals - from input (s \ input).
 func (s *Span) Except(input Span) SpanMany {
 	if !s.IsIntersection(input) {
-		return NewMany(New(s.start, s.end))
+		return NewMany(Span{
+			start: s.start,
+			end:   s.end,
+		})
 	}
 	if afterOrEqual(s.start, input.start) && beforeOrEqual(s.end, input.end) {
 		return NewMany()
 	}
 	if s.start.Before(input.start) && s.end.After(input.end) {
 		return NewMany(
-			New(s.start, input.start),
-			New(input.end, s.end),
+			Span{
+				start: s.start,
+				end:   input.start,
+			},
+			Span{
+				start: input.end,
+				end:   s.end,
+			},
 		)
 	}
 	if s.start.Before(input.start) && afterOrEqual(s.end, input.start) {
-		return NewMany(New(s.start, input.start))
+		return NewMany(Span{
+			start: s.start,
+			end:   input.start,
+		})
 	}
 	if beforeOrEqual(s.start, input.end) && s.end.After(input.end) {
-		return NewMany(New(input.end, s.end))
+		return NewMany(Span{
+			start: input.end,
+			end:   s.end,
+		})
 	}
-	panic("unknown case for Except")
+	return SpanMany{}
 }
 
 func (s *Span) minStart(input Span) time.Time {
