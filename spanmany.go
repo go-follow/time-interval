@@ -24,11 +24,16 @@ func NewMany(spans ...Span) SpanMany {
 }
 
 // Add adding a time interval to SpanMany.
-func (s *SpanMany) Add(start time.Time, end time.Time) {
+func (s *SpanMany) Add(start time.Time, end time.Time) error {
 	if s == nil || s.spans == nil {
-		return
+		return nil
 	}
-	s.spans = append(s.spans, New(start, end))
+	interval, err := New(start, end)
+	if err != nil {
+		return err
+	}
+	s.spans = append(s.spans, interval)
+	return nil
 }
 
 // AddMany adding several time slots at once to the existing one SpanMany.
@@ -199,7 +204,10 @@ func (s *SpanMany) Union(input ...SpanMany) SpanMany {
 			continue
 		}
 		if sp.isIntersectionEqual(bufferSpan) {
-			bufferSpan = New(sp.minStart(bufferSpan), sp.maxEnd(bufferSpan))
+			bufferSpan = Span{
+				start: sp.minStart(bufferSpan),
+				end:   sp.maxEnd(bufferSpan),
+			}
 			continue
 		}
 		result = append(result, bufferSpan)
