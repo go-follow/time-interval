@@ -1,12 +1,56 @@
 package timeinterval
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestNew(t *testing.T) {
+	testCases := []struct {
+		name     string
+		start    time.Time
+		end      time.Time
+		wantErr  error
+		wantSpan Span
+	}{
+		{
+			name:     "start equal end",
+			start:    time.Date(2022, 2, 12, 7, 30, 0, 0, time.UTC),
+			end:      time.Date(2022, 2, 12, 7, 30, 0, 0, time.UTC),
+			wantErr:  errors.New("time start cannot be more time end"),
+			wantSpan: Span{},
+		},
+		{
+			name:     "start more end",
+			start:    time.Date(2022, 2, 12, 7, 30, 0, 1, time.UTC),
+			end:      time.Date(2022, 2, 12, 7, 30, 0, 0, time.UTC),
+			wantErr:  errors.New("time start cannot be more time end"),
+			wantSpan: Span{},
+		},
+		{
+			name:    "start less end",
+			start:   time.Date(2022, 2, 12, 5, 30, 0, 0, time.UTC),
+			end:     time.Date(2022, 2, 12, 7, 30, 0, 0, time.UTC),
+			wantErr: nil,
+			wantSpan: Span{
+				start: time.Date(2022, 2, 12, 5, 30, 0, 0, time.UTC),
+				end:   time.Date(2022, 2, 12, 7, 30, 0, 0, time.UTC),
+			},
+		},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			interval, err := New(tc.start, tc.end)
+			assert.Equal(t, tc.wantErr, err)
+			assert.Equal(t, tc.wantSpan, interval)
+		})
+	}
+}
 
 func TestEqual(t *testing.T) {
 	testCases := []struct {
