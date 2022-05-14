@@ -16,7 +16,7 @@ jobs:
     - name: Test
       run: go test -v ./...
       
-  coverage:
+  check-coverage:
     name: Check coverage
     needs: [test]
     runs-on: ubuntu-latest
