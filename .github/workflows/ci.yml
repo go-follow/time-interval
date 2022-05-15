@@ -21,9 +21,9 @@ jobs:
     needs: [test]
     runs-on: ubuntu-latest
     steps:
-      - uses: shogo82148/actions-goveralls@v1
+      - uses: romeovs/lcov-reporter-action@v0.2.16
         with:
-          parallel-finished: true
+          lcov-file: ./coverage/lcov.info
       
   lint:
     runs-on: ubuntu-latest
